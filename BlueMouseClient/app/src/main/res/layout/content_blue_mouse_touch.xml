@@ -15,8 +15,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="30dp" >
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/turnOn"
@@ -29,21 +29,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/off" />
-
     </LinearLayout>
-
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="80dp" >
+        android:layout_marginTop="80dp"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/paired"
+        <TextView
+            android:id="@+id/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/List" />
+            android:text="" />
 
         <Button
             android:id="@+id/search"
@@ -54,7 +52,7 @@
         <ListView
             android:id="@+id/listView1"
             android:layout_width="fill_parent"
-            android:layout_height="200dp" >
+            android:layout_height="200dp">
 
         </ListView>
     </LinearLayout>

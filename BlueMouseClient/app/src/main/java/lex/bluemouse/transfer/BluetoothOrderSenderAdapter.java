@@ -3,34 +3,36 @@ package lex.bluemouse.transfer;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.res.Resources;
 import android.util.Log;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Set;
 import java.util.UUID;
 
 public class BluetoothOrderSenderAdapter implements OrderSender {
-    public static final UUID BLUETOOTH_UUID = UUID.fromString("0e0165c9-0fa0-4f6f-93a5-f388b99395de");
-    public static final String BLUETOOTH_TAG = "Bluetooth";
+    private static final UUID BLUETOOTH_UUID = UUID.fromString("f1db4b40-8de7-11e4-bd61-0002a5d5c51b");
+    private static final String RFCOMM_SOCKET_STRING = "createRfcommSocket";
+    private static final String BLUETOOTH_TAG = "Bluetooth";
 
-    private final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+    private final BluetoothAdapter bluetoothAdapter;
     private BluetoothSocket socket = null;
 
-    public BluetoothOrderSenderAdapter(BluetoothSocket socket) {
-        this.socket = socket;
+    public BluetoothOrderSenderAdapter(BluetoothAdapter bluetoothAdapter) {
+        this.bluetoothAdapter = bluetoothAdapter;
     }
-
 
     @Override
     public void moveMouse(int x, int y) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         char[] chars = Character.toChars(x);
-        sb.append(chars);
+        builder.append("X:");
+        builder.append(chars);
         chars = Character.toChars(y);
-        sb.append(chars);
+        builder.append("Y:");
+        builder.append(chars);
 
-        send(chars);
+        send(builder.toString().toCharArray());
     }
 
     @Override
@@ -48,33 +50,32 @@ public class BluetoothOrderSenderAdapter implements OrderSender {
         }
     }
 
-    private void connect() {
-        Set<BluetoothDevice> pairedDevices = adapter.getBondedDevices();
-        if (pairedDevices.iterator().hasNext()) {
-            BluetoothDevice device = pairedDevices.iterator().next();
-            connect(device);
-        } else {
-            Log.i(BLUETOOTH_TAG, "No device available");
+    public void connect(final String deviceName) throws Exception {
+        BluetoothDevice device = findDeviceByName(deviceName);
+
+        try {
+            socket = device.createRfcommSocketToServiceRecord(BLUETOOTH_UUID);
+        } catch (Exception e) {
+            Log.e(BLUETOOTH_TAG, "Error creating socket");
+        }
+        try {
+            socket.connect();
+        } catch (IOException e) {
+            Log.w(BLUETOOTH_TAG, "Trying fallback...");
+            socket = (BluetoothSocket) device.getClass().getMethod(RFCOMM_SOCKET_STRING, new Class[]{int.class}).invoke(device, 1);
+            socket.connect();
+            Log.w(BLUETOOTH_TAG, "Fallback connected");
         }
     }
 
-    private void connect(BluetoothDevice device) {
-        Log.i(BLUETOOTH_TAG, "Beginning connection");
-        try {
-            try {
-                socket = device.createRfcommSocketToServiceRecord(BLUETOOTH_UUID);
-        adapter.cancelDiscovery();
-            } catch (IOException e) {
-                Log.e(BLUETOOTH_TAG, "Socket creation failed", e);
-            }
-            socket.connect();
-        } catch (IOException e) {
-            try {
-                socket.close();
-            } catch (IOException e2) {
-                Log.e(BLUETOOTH_TAG, "Unable to close() socket during connection failure", e2);
+
+    private BluetoothDevice findDeviceByName(final String deviceName) throws Resources.NotFoundException {
+        for (BluetoothDevice pairedDevice : bluetoothAdapter.getBondedDevices()) {
+            if (pairedDevice.getName().equals(deviceName)) {
+                return pairedDevice;
             }
         }
+        throw new Resources.NotFoundException("Not found device with name " + deviceName);
     }
 
 }

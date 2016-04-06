@@ -36,8 +36,11 @@ public class BluetoothOrderReceiverAdapter extends Thread {
             while (true) {
                 String line = "";
                 char readChar;
-                while (((readChar = input.readChar()) > 0) && (readChar != '\n')) {
+                while (input.available() > 0 && ((readChar = input.readChar()) > 0) && (readChar != '\n')) {
                     line = line + readChar;
+                }
+                if(line.trim().isEmpty()) {
+                    continue;
                 }
                 System.out.println("Received " + line);
                 statusUpdater.accept("Last received: " + line);
