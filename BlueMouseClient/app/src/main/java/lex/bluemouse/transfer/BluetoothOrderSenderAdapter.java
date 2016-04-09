@@ -1,6 +1,5 @@
 package lex.bluemouse.transfer;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.res.Resources;
@@ -10,17 +9,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
+import static lex.bluemouse.BluetoothDiscoveryActivity.BLUETOOTH_ADAPTER;
+
 public class BluetoothOrderSenderAdapter implements OrderSender {
     private static final UUID BLUETOOTH_UUID = UUID.fromString("f1db4b40-8de7-11e4-bd61-0002a5d5c51b");
     private static final String RFCOMM_SOCKET_STRING = "createRfcommSocket";
     private static final String BLUETOOTH_TAG = "Bluetooth";
 
-    private final BluetoothAdapter bluetoothAdapter;
     private BluetoothSocket socket = null;
-
-    public BluetoothOrderSenderAdapter(BluetoothAdapter bluetoothAdapter) {
-        this.bluetoothAdapter = bluetoothAdapter;
-    }
 
     @Override
     public void moveMouse(int x, int y) {
@@ -29,7 +25,7 @@ public class BluetoothOrderSenderAdapter implements OrderSender {
         builder.append("X:");
         builder.append(chars);
         chars = Character.toChars(y);
-        builder.append("Y:");
+        builder.append(":Y:");
         builder.append(chars);
 
         send(builder.toString().toCharArray());
@@ -37,8 +33,11 @@ public class BluetoothOrderSenderAdapter implements OrderSender {
 
     @Override
     public void openWebsite(String url) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("WEB:");
         char[] charUrl = url.toCharArray();
-        send(charUrl);
+        builder.append(charUrl);
+        send(builder.toString().toCharArray());
     }
 
     private void send(char[] chars) {
@@ -70,7 +69,7 @@ public class BluetoothOrderSenderAdapter implements OrderSender {
 
 
     private BluetoothDevice findDeviceByName(final String deviceName) throws Resources.NotFoundException {
-        for (BluetoothDevice pairedDevice : bluetoothAdapter.getBondedDevices()) {
+        for (BluetoothDevice pairedDevice : BLUETOOTH_ADAPTER.getBondedDevices()) {
             if (pairedDevice.getName().equals(deviceName)) {
                 return pairedDevice;
             }

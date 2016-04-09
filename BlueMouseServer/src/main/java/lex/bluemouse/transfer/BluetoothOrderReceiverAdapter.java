@@ -1,5 +1,8 @@
 package lex.bluemouse.transfer;
 
+import lex.bluemouse.action.ActionController;
+import lex.bluemouse.action.MouseController;
+
 import javax.bluetooth.DiscoveryAgent;
 import javax.bluetooth.LocalDevice;
 import javax.bluetooth.UUID;
@@ -20,6 +23,8 @@ public class BluetoothOrderReceiverAdapter extends Thread {
     public BluetoothOrderReceiverAdapter(Consumer<String> statusUpdater) {
         this.statusUpdater = statusUpdater;
     }
+    public MouseController mouseController = new MouseController();
+    public ActionController actionController = new ActionController();
 
     @Override
     public void run() {
@@ -42,11 +47,25 @@ public class BluetoothOrderReceiverAdapter extends Thread {
                 if(line.trim().isEmpty()) {
                     continue;
                 }
-                System.out.println("Received " + line);
-                statusUpdater.accept("Last received: " + line);
+                processCommand(line);
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void processCommand(String command) {
+        System.out.println("Received command: " + command);
+        statusUpdater.accept("Last command: " + command);
+        if(command.startsWith("X:")) {
+            String[] splitCommand = command.split(":");
+            int x = Integer.valueOf(splitCommand[1]);
+            int y = Integer.valueOf(splitCommand[3]);
+            mouseController.move(x,y);
+        } else if(command.startsWith("WEB:")) {
+            String[] splitCommand = command.split(":");
+            String website = splitCommand[1];
+            actionController.openWebsite(website);
         }
     }
 }

@@ -21,9 +21,9 @@ import android.widget.Toast;
 
 import lex.bluemouse.transfer.BluetoothOrderSenderAdapter;
 
-public class BlueMouseTouchActivity extends AppCompatActivity {
-    private static final BluetoothAdapter myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    private final BluetoothOrderSenderAdapter bluetoothOrderSender = new BluetoothOrderSenderAdapter(myBluetoothAdapter);
+public class BluetoothDiscoveryActivity extends AppCompatActivity {
+    public static final BluetoothAdapter BLUETOOTH_ADAPTER = BluetoothAdapter.getDefaultAdapter();
+    public static final BluetoothOrderSenderAdapter BLUETOOTH_ORDER_SENDER = new BluetoothOrderSenderAdapter();
     private final FoundDeviceReceiver foundDeviceReceiver = new FoundDeviceReceiver();
 
     private Button onBtn, offBtn, findBtn;
@@ -34,13 +34,13 @@ public class BlueMouseTouchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_blue_mouse_touch);
+        setContentView(R.layout.activity_bluetooth_discovery);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         findComponents();
 
-        if (myBluetoothAdapter == null) {
+        if (BLUETOOTH_ADAPTER == null) {
             onBtn.setEnabled(false);
             offBtn.setEnabled(false);
             findBtn.setEnabled(false);
@@ -74,12 +74,14 @@ public class BlueMouseTouchActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     try {
-                        bluetoothOrderSender.connect((String) myListView.getItemAtPosition(position));
+                        BLUETOOTH_ORDER_SENDER.connect((String) myListView.getItemAtPosition(position));
                     } catch (Exception e) {
                         text.setText("Connection to device failed");
                         e.printStackTrace();
                     }
                     text.setText("Connected to device");
+                    Intent intent = new Intent(BluetoothDiscoveryActivity.this, ActionActivity.class);
+                    startActivity(intent);
                 }
             });
         }
@@ -95,8 +97,8 @@ public class BlueMouseTouchActivity extends AppCompatActivity {
     }
 
     public void on(View view) {
-        if (!myBluetoothAdapter.isEnabled()) {
-            myBluetoothAdapter.enable();
+        if (!BLUETOOTH_ADAPTER.isEnabled()) {
+            BLUETOOTH_ADAPTER.enable();
             text.setText("Bluetooth turned on");
         } else {
             Toast.makeText(getApplicationContext(), "Bluetooth is already on", Toast.LENGTH_LONG).show();
@@ -110,26 +112,28 @@ public class BlueMouseTouchActivity extends AppCompatActivity {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                deviceList.add(device.getName());
-                deviceList.notifyDataSetChanged();
+                if(device.getName() != null) {
+                    deviceList.add(device.getName());
+                    deviceList.notifyDataSetChanged();
+                }
             }
         }
     }
 
     public void find(View view) {
-        if (myBluetoothAdapter.isDiscovering()) {
+        if (BLUETOOTH_ADAPTER.isDiscovering()) {
             // the button is pressed when it discovers, so cancel the discovery
-            myBluetoothAdapter.cancelDiscovery();
+            BLUETOOTH_ADAPTER.cancelDiscovery();
         } else {
             deviceList.clear();
-            myBluetoothAdapter.startDiscovery();
+            BLUETOOTH_ADAPTER.startDiscovery();
 
             registerReceiver(foundDeviceReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
         }
     }
 
     public void off(View view) {
-        myBluetoothAdapter.disable();
+        BLUETOOTH_ADAPTER.disable();
         text.setText("Bluetooth turned off");
     }
 

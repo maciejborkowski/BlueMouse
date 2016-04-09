@@ -5,4 +5,5 @@
     <string name="off">Off</string>
     <string name="List">List</string>
     <string name="Find">Find</string>
+    <string name="title_activity_action">ActionActivity</string>
 </resources>
