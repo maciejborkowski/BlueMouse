@@ -19,16 +19,32 @@ public class BluetoothOrderSenderAdapter implements OrderSender {
     private BluetoothSocket socket = null;
 
     @Override
-    public void moveMouse(int x, int y) {
+    public void moveMouse(int x, int y, boolean improved) {
         StringBuilder builder = new StringBuilder();
-        char[] chars = Character.toChars(x);
-        builder.append("X:");
+        char[] chars = Integer.toString(x).toCharArray();
+        if(improved) {
+            builder.append("MOVEIMP:X:");
+        } else {
+            builder.append("MOVE:X:");
+        }
         builder.append(chars);
-        chars = Character.toChars(y);
+        chars = Integer.toString(y).toCharArray();
         builder.append(":Y:");
         builder.append(chars);
 
         send(builder.toString().toCharArray());
+    }
+
+    @Override
+    public void clickLeftMouse() {
+        String command = "CLICKLEFT";
+        send(command.toCharArray());
+    }
+
+    @Override
+    public void clickRightMouse() {
+        String command = "CLICKRIGHT";
+        send(command.toCharArray());
     }
 
     @Override
@@ -40,7 +56,12 @@ public class BluetoothOrderSenderAdapter implements OrderSender {
         send(builder.toString().toCharArray());
     }
 
-    private void send(char[] chars) {
+    @Override
+    public void endConnection() {
+        send("END".toCharArray());
+    }
+
+    private synchronized void send(char[] chars) {
         try {
             DataOutputStream output = new DataOutputStream(socket.getOutputStream());
             output.writeChars(new String(chars) + "\n");
@@ -66,7 +87,6 @@ public class BluetoothOrderSenderAdapter implements OrderSender {
             Log.w(BLUETOOTH_TAG, "Fallback connected");
         }
     }
-
 
     private BluetoothDevice findDeviceByName(final String deviceName) throws Resources.NotFoundException {
         for (BluetoothDevice pairedDevice : BLUETOOTH_ADAPTER.getBondedDevices()) {

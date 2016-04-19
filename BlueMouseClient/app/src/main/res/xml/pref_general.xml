@@ -1,0 +1,25 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:key="imp_draw"
+        android:title="@string/improved_drawing"
+        android:defaultValue="true" />
+
+    <EditTextPreference
+        android:defaultValue="@string/default_sens_x"
+        android:inputType="number"
+        android:key="sens_x"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/SensitivityX" />
+
+    <EditTextPreference
+        android:defaultValue="@string/default_sens_y"
+        android:inputType="number"
+        android:key="sens_y"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/SensitivityY" />
+
+</PreferenceScreen>

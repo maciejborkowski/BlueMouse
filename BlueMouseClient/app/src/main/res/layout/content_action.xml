@@ -13,16 +13,53 @@
     tools:showIn="@layout/activity_action">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:orientation="horizontal">
+        android:layout_marginRight="2dp"
+        android:layout_marginLeft="2dp"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/reddit"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="200dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginLeft="2dp"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/left"
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/right"
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="reddit" />
+            android:layout_marginRight="2dp"
+            android:layout_marginLeft="2dp"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/web"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Open"
+                android:layout_centerHorizontal="true" />
+
+            <EditText
+                android:id="@+id/url"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="www.youtube.com"
+                android:singleLine="true"/>
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>

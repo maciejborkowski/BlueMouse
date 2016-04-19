@@ -145,7 +145,7 @@ public class BluetoothDiscoveryActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_blue_mouse_touch, menu);
+        getMenuInflater().inflate(R.menu.menu_discovery, menu);
         return true;
     }
 
@@ -153,7 +153,8 @@ public class BluetoothDiscoveryActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
